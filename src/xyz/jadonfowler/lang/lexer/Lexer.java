@@ -32,6 +32,12 @@ public class Lexer implements Iterator<Token>, Iterable<Token> {
         this.source = program;
     }
 
+    public Lexer(Lexer lex) {
+        this.source = lex.source;
+        this.lastToken = lex.lastToken;
+        this.pushBack = lex.pushBack;
+    }
+
     @Override
     public boolean hasNext() {
         return !source.trim().isEmpty();

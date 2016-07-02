@@ -20,7 +20,29 @@ public class Token {
 
     @Override
     public String toString() {
-        return type.toString() + "(" + value + ")";
+        return type.toString() + "(\"" + value + "\")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Token) {
+            Token t = (Token) o;
+            if (t.getValue().equals(this.value) && t.getType() == this.type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean tokensAreEqual(Token[] a, Token[] b) {
+        if (a.length == b.length) {
+            int length = a.length;
+            for (int i = 0; i < length; i++)
+                if (!a[i].equals(b[i]))
+                    return false;
+            return true;
+        }
+        return false;
     }
 
 }

@@ -1,31 +1,42 @@
 package xyz.jadonfowler.lang.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LClass extends Scope {
 
     private String name;
-    private LField[] fields;
-    private LMethod[] methods;
+    private List<LField> fields;
+    private List<LMethod> methods;
 
-    public LClass(String name, LField[] fields, LMethod[] methods) {
+    public LClass(String name) {
+        this(name, new ArrayList<LField>(), new ArrayList<LMethod>());
+    }
+
+    public LClass(String name, List<LField> fields, List<LMethod> methods) {
         this.name = name;
         this.fields = fields;
         this.methods = methods;
-    }
-
-    public LClass(String name) {
-        this(name, null, null);
     }
 
     public String getName() {
         return name;
     }
 
-    public LField[] getFields() {
+    public List<LField> getFields() {
         return fields;
     }
 
-    public LMethod[] getMethods() {
+    public void addField(LField f) {
+        fields.add(f);
+    }
+
+    public List<LMethod> getMethods() {
         return methods;
+    }
+
+    public void addMethod(LMethod m) {
+        methods.add(m);
     }
 
 }

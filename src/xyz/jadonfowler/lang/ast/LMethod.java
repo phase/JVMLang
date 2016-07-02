@@ -14,11 +14,6 @@ public class LMethod extends Scope {
         this.parameters = arguments;
     }
 
-    public LValue call(LValue... args) {
-        // TODO ASM
-        return new LValue(returnType, null);
-    }
-
     public LClass getParent() {
         return parent;
     }
