@@ -4,17 +4,18 @@ import org.objectweb.asm.Opcodes;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.lexer.TokenType;
 
-public class Modifier implements Opcodes {
+public class LModifier implements Opcodes {
 
-    public static Modifier PUBLIC = new Modifier(new Token("public", TokenType.IDENTIFIER), ACC_PUBLIC);
-    public static Modifier PRIVATE = new Modifier(new Token("private", TokenType.IDENTIFIER), ACC_PRIVATE);
-    public static Modifier PROTECTED = new Modifier(new Token("protected", TokenType.IDENTIFIER), ACC_PROTECTED);
-    public static Modifier STATIC = new Modifier(new Token("static", TokenType.IDENTIFIER), ACC_STATIC);
+    public static LModifier PUBLIC = new LModifier(new Token("public", TokenType.IDENTIFIER), ACC_PUBLIC);
+    public static LModifier PRIVATE = new LModifier(new Token("private", TokenType.IDENTIFIER), ACC_PRIVATE);
+    public static LModifier PROTECTED = new LModifier(new Token("protected", TokenType.IDENTIFIER), ACC_PROTECTED);
+    public static LModifier STATIC = new LModifier(new Token("static", TokenType.IDENTIFIER), ACC_STATIC);
+    public static LModifier ABSTRACT = new LModifier(new Token("abstract", TokenType.IDENTIFIER), ACC_ABSTRACT);
 
     private Token token;
     private int modifier;
 
-    private Modifier(Token token, int modifier) {
+    private LModifier(Token token, int modifier) {
         this.token = token;
         this.modifier = modifier;
     }
@@ -32,7 +33,7 @@ public class Modifier implements Opcodes {
         return false;
     }
 
-    public static Modifier getModifier(Token token) {
+    public static LModifier getModifier(Token token) {
         // TODO find a better way to do this
         if (token.getValue().equals(PUBLIC.getToken().getValue()))
             return PUBLIC;

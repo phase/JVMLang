@@ -6,17 +6,17 @@ import java.util.List;
 public class LField extends LVariable {
 
     private LClass parent;
-    private List<Modifier> modifiers;
+    private List<LModifier> modifiers;
 
     public LField(LClass parent, LType type, String name) {
         this(parent, new ArrayList<>(), type, name);
     }
 
-    public LField(LClass parent, List<Modifier> modifiers, LType type, String name) {
+    public LField(LClass parent, List<LModifier> modifiers, LType type, String name) {
         this(parent, modifiers, type, name, null);
     }
 
-    public LField(LClass parent, List<Modifier> modifiers, LType type, String name, Object value) {
+    public LField(LClass parent, List<LModifier> modifiers, LType type, String name, Object value) {
         super(type, name, value);
         this.parent = parent;
         this.modifiers = modifiers;
@@ -26,7 +26,7 @@ public class LField extends LVariable {
         return parent;
     }
 
-    public List<Modifier> getModifiers() {
+    public List<LModifier> getModifiers() {
         return modifiers;
     }
 

@@ -6,8 +6,10 @@ import java.util.List;
 import xyz.jadonfowler.lang.ast.AbstractClassTree;
 import xyz.jadonfowler.lang.ast.LClass;
 import xyz.jadonfowler.lang.ast.LField;
+import xyz.jadonfowler.lang.ast.LMethod;
+import xyz.jadonfowler.lang.ast.LModifier;
+import xyz.jadonfowler.lang.ast.LParameter;
 import xyz.jadonfowler.lang.ast.LType;
-import xyz.jadonfowler.lang.ast.Modifier;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.lexer.TokenType;
@@ -51,12 +53,12 @@ public class Parser {
                     }
                     break;
                 case IN_CLASS:
-                    if (Modifier.isModifier(token)) {
-                        List<Modifier> modifiers = new ArrayList<Modifier>();
-                        modifiers.add(Modifier.getModifier(token));
+                    if (LModifier.isModifier(token)) {
+                        List<LModifier> modifiers = new ArrayList<LModifier>();
+                        modifiers.add(LModifier.getModifier(token));
                         Token cache;
-                        while (lexer.hasNext() && Modifier.isModifier((cache = lexer.next())))
-                            modifiers.add(Modifier.getModifier(cache));
+                        while (lexer.hasNext() && LModifier.isModifier((cache = lexer.next())))
+                            modifiers.add(LModifier.getModifier(cache));
                         lexer.pushBack();
                         if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
                             // public static... type
@@ -68,9 +70,40 @@ public class Parser {
 
                                     if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.SYMBOL)) {
                                         // public static void method (
-                                        if(cache.getValue().equals("(")) {
-                                            
+                                        if (cache.getValue().equals("(")) {
+                                            List<LParameter> parameters = new ArrayList<LParameter>();
+                                            while (lexer.hasNext()) {
+                                                Token ptype = lexer.next();
+                                                Token pname = lexer.next();
+                                                parameters.add(new LParameter(LType.getType(ptype.getValue()), pname.getValue()));
+                                                cache = lexer.next();
+                                                if (cache.getType().equals(TokenType.SYMBOL)) {
+                                                    if (cache.getValue().equals(","))
+                                                        continue;
+                                                    if (cache.getValue().equals(")"))
+                                                        break;
+                                                } else {
+                                                    lexer.pushBack();
+                                                    break;
+                                                }
+                                            }
+                                            if (lexer.hasNext()) {
+                                                cache = lexer.next();
+                                                if (cache.getType().equals(TokenType.SYMBOL)) {
+                                                    if (cache.getValue().equals("{")) {
+                                                        LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
+                                                        currentClass.addMethod(method);
+                                                        context = Context.IN_METHOD;
+                                                    } else
+                                                        lexer.pushBack();
+
+                                                }
+                                            }
                                         } else {
+                                            // The symbol must be for something
+                                            // else, so we're going to ignore it
+                                            // and parse what we have as a
+                                            // field.
                                             lexer.pushBack();
                                             LField field = new LField(currentClass, modifiers, type, name);
                                             currentClass.addField(field);
@@ -94,6 +127,10 @@ public class Parser {
                     }
                     break;
                 case IN_METHOD:
+                    if (token.equals(CLOSE_BRACE_TOKEN)) {
+                        // done with method
+                        context = Context.IN_CLASS;
+                    }
                     break;
             }
         }

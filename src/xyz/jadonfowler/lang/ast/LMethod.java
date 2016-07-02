@@ -8,15 +8,19 @@ public class LMethod extends Scope {
     private LClass parent;
     private String name;
     private LType returnType;
-    private LType[] parameters;
-    private List<Modifier> modifiers;
+    private List<LParameter> parameters;
+    private List<LModifier> modifiers;
 
-    public LMethod(LClass parent, String name, LType returnType, LType... parameters) {
+    public LMethod(LClass parent, String name, LType returnType) {
+        this(parent, name, returnType, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public LMethod(LClass parent, String name, LType returnType, List<LParameter> parameters, List<LModifier> modifiers) {
         this.parent = parent;
         this.name = name;
         this.returnType = returnType;
         this.parameters = parameters;
-        this.modifiers = new ArrayList<>();
+        this.modifiers = modifiers;
     }
 
     public LClass getParent() {
@@ -31,11 +35,11 @@ public class LMethod extends Scope {
         return returnType;
     }
 
-    public LType[] getParameters() {
+    public List<LParameter> getParameters() {
         return parameters;
     }
 
-    public List<Modifier> getModifiers() {
+    public List<LModifier> getModifiers() {
         return modifiers;
     }
 
