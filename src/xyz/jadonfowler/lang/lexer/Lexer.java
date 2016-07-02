@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Lexer implements Iterator<Token> {
+public class Lexer implements Iterator<Token>, Iterable<Token> {
 
     private static HashMap<Pattern, TokenType> tokenPatterns;
 
@@ -15,12 +15,12 @@ public class Lexer implements Iterator<Token> {
          * Add Token Patterns
          */
         tokenPatterns = new HashMap<>();
-        tokenPatterns.put(Pattern.compile("([a-zA-Z]+)"), TokenType.IDENTIFIER);
-        tokenPatterns.put(Pattern.compile("((-)?[0-9]+)"), TokenType.INTEGER_LITERAL);
-        tokenPatterns.put(Pattern.compile("(\".*\")"), TokenType.STRING_LITERAL);
+        tokenPatterns.put(Pattern.compile("^([a-zA-Z]+)"), TokenType.IDENTIFIER);
+        tokenPatterns.put(Pattern.compile("^((-)?[0-9]+)"), TokenType.INTEGER_LITERAL);
+        tokenPatterns.put(Pattern.compile("^(\".*\")"), TokenType.STRING_LITERAL);
 
-        for (String token : new String[] {"=", "\\(", "\\)", "\\.", "\\,"}) {
-            tokenPatterns.put(Pattern.compile("(" + token + ")"), TokenType.SYMBOL);
+        for (String token : new String[] {"=", "(", ")", ".", ",", "{", "}", "[", "]", ";"}) {
+            tokenPatterns.put(Pattern.compile("^(\\" + token + ")"), TokenType.SYMBOL);
         }
     }
 
@@ -34,7 +34,7 @@ public class Lexer implements Iterator<Token> {
 
     @Override
     public boolean hasNext() {
-        return !source.isEmpty();
+        return !source.trim().isEmpty();
     }
 
     @Override
@@ -63,6 +63,11 @@ public class Lexer implements Iterator<Token> {
         }
 
         return null;
+    }
+
+    @Override
+    public Iterator<Token> iterator() {
+        return this;
     }
 
     public void pushBack() {

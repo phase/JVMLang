@@ -6,6 +6,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import xyz.jadonfowler.lang.lexer.Lexer;
+import xyz.jadonfowler.lang.lexer.Token;
+
 public class Lang {
 
     public static void main(String[] args) {
@@ -16,7 +19,10 @@ public class Lang {
             } else if (file.isFile()) {
                 try {
                     String content = new String(Files.readAllBytes(Paths.get(file.getPath())), Charset.defaultCharset());
-                    // TODO parse content
+                    Lexer lexer = new Lexer(content);
+                    for(Token token : lexer) {
+                        System.out.println(token.toString());
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
