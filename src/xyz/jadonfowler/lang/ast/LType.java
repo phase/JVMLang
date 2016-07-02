@@ -1,23 +1,43 @@
 package xyz.jadonfowler.lang.ast;
 
-public enum LType {
+import java.util.ArrayList;
+import java.util.List;
 
-    VOID(Void.class),
-    STRING(String.class),
-    INTEGER(Integer.class),
-    LONG(Long.class),
-    BYTE(Byte.class),
-    FLOAT(Float.class),
-    DOUBLE(Double.class);
+public class LType {
 
-    private Class<?> clazz;
+    private static List<LType> types = new ArrayList<>();
 
-    LType(Class<?> clazz) {
-        this.clazz = clazz;
+    public static final LType VOID = new LType("void");
+    public static final LType STRING = new LType("string");
+    public static final LType INTEGER = new LType("int");
+    public static final LType LONG = new LType("long");
+    public static final LType BYTE = new LType("byte");
+    public static final LType FLOAT = new LType("float");
+    public static final LType DOUBLE = new LType("double");
+
+    private String ident;
+
+    public LType(String ident) {
+        this.ident = ident;
+        types.add(this);
     }
 
-    public Class<?> getJavaClass() {
-        return clazz;
+    public String toString() {
+        return ident;
+    }
+
+    public static boolean isType(String ident) {
+        for (LType type : types)
+            if (type.toString().equals(ident))
+                return true;
+        return false;
+    }
+
+    public static LType getType(String ident) {
+        for (LType type : types)
+            if (type.toString().equals(ident))
+                return type;
+        return null;
     }
 
 }

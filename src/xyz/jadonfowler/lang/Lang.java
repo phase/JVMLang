@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import xyz.jadonfowler.lang.ast.LClass;
+import xyz.jadonfowler.lang.ast.LField;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.parser.Parser;
@@ -27,7 +29,10 @@ public class Lang {
                     Parser parser = new Parser(lexer);
                     parser.parse();
                     for (LClass clazz : parser.getClassTree().getClasses()) {
-                        System.out.println(clazz.getName());
+                        System.out.println("Class: " + clazz.getName());
+                        for (LField field : clazz.getFields()) {
+                            System.out.println("  Field: " + field.getModifiers().toString() + " " + field.getType() + " " + field.getName());
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

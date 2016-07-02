@@ -3,7 +3,7 @@ package xyz.jadonfowler.lang.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LClass extends Scope {
+public class LClass extends LType {
 
     private String name;
     private List<LField> fields;
@@ -14,6 +14,7 @@ public class LClass extends Scope {
     }
 
     public LClass(String name, List<LField> fields, List<LMethod> methods) {
+        super(name);
         this.name = name;
         this.fields = fields;
         this.methods = methods;

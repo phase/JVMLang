@@ -1,7 +1,13 @@
 package xyz.jadonfowler.lang.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import xyz.jadonfowler.lang.ast.AbstractClassTree;
 import xyz.jadonfowler.lang.ast.LClass;
+import xyz.jadonfowler.lang.ast.LField;
+import xyz.jadonfowler.lang.ast.LType;
+import xyz.jadonfowler.lang.ast.Modifier;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.lexer.TokenType;
@@ -32,10 +38,10 @@ public class Parser {
                 case TOP:
                     if (token.equals(CLASS_TOKEN)) {
                         String className;
-                        Token t;
-                        if (lexer.hasNext() && (t = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
-                            className = t.getValue();
-                            if (lexer.hasNext() && (t = lexer.next()).equals(OPEN_BRACE_TOKEN)) {
+                        Token cache;
+                        if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                            className = cache.getValue();
+                            if (lexer.hasNext() && (cache = lexer.next()).equals(OPEN_BRACE_TOKEN)) {
                                 LClass clazz = new LClass(className);
                                 act.add(clazz);
                                 currentClass = clazz;
@@ -45,6 +51,43 @@ public class Parser {
                     }
                     break;
                 case IN_CLASS:
+                    if (Modifier.isModifier(token)) {
+                        List<Modifier> modifiers = new ArrayList<Modifier>();
+                        modifiers.add(Modifier.getModifier(token));
+                        Token cache;
+                        while (lexer.hasNext() && Modifier.isModifier((cache = lexer.next())))
+                            modifiers.add(Modifier.getModifier(cache));
+                        lexer.pushBack();
+                        if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                            // public static... type
+                            if (LType.isType(cache.getValue())) {
+                                LType type = LType.getType(cache.getValue());
+                                if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                                    // public... type name
+                                    String name = cache.getValue();
+
+                                    if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.SYMBOL)) {
+                                        // public static void method (
+                                        if(cache.getValue().equals("(")) {
+                                            
+                                        } else {
+                                            lexer.pushBack();
+                                            LField field = new LField(currentClass, modifiers, type, name);
+                                            currentClass.addField(field);
+                                        }
+                                    } else {
+                                        // public static int field
+                                        lexer.pushBack();
+                                        LField field = new LField(currentClass, modifiers, type, name);
+                                        currentClass.addField(field);
+                                    }
+                                }
+                            }
+                        } else {
+                            // random modifiers without an identifier after
+                            // them...
+                        }
+                    }
                     if (token.equals(CLOSE_BRACE_TOKEN)) {
                         // done with class
                         break lex;
