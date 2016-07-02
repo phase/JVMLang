@@ -1,6 +1,6 @@
 package xyz.jadonfowler.lang.ast;
 
-public class LClass {
+public class LClass extends Scope {
 
     private String name;
     private LField[] fields;

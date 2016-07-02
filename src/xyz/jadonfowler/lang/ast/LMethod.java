@@ -1,6 +1,6 @@
 package xyz.jadonfowler.lang.ast;
 
-public class LMethod {
+public class LMethod extends Scope {
 
     private LClass parent;
     private String name;
