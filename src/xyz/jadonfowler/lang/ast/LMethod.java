@@ -5,13 +5,13 @@ public class LMethod {
     private LClass parent;
     private String name;
     private LType returnType;
-    private LType[] arguments;
+    private LType[] parameters;
 
     public LMethod(LClass parent, String name, LType returnType, LType... arguments) {
         this.parent = parent;
         this.name = name;
         this.returnType = returnType;
-        this.arguments = arguments;
+        this.parameters = arguments;
     }
 
     public LValue call(LValue... args) {
@@ -31,8 +31,8 @@ public class LMethod {
         return returnType;
     }
 
-    public LType[] getArguments() {
-        return arguments;
+    public LType[] getParameters() {
+        return parameters;
     }
 
 }
