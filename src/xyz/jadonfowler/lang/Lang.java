@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import xyz.jadonfowler.lang.ast.LClass;
 import xyz.jadonfowler.lang.ast.LField;
 import xyz.jadonfowler.lang.ast.LMethod;
+import xyz.jadonfowler.lang.codegen.JavaScriptBackend;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.parser.Parser;
@@ -28,7 +29,7 @@ public class Lang {
                         System.out.println(token);
                     Parser parser = new Parser(lexer);
                     parser.parse();
-                    for (LClass clazz : parser.getClassTree().getClasses()) {
+                    for (LClass clazz : parser.getClassTree()) {
                         System.out.println("Class: " + clazz.getName());
                         for (LField field : clazz.getFields()) {
                             System.out.println("  Field: " + field.getModifiers().toString() + " " + field.getType() + " " + field.getName());
@@ -38,6 +39,11 @@ public class Lang {
                                     .println("  Method: " + method.getModifiers().toString() + " " + method.getReturnType() + " " + method.getName()
                                             + " (" + method.getParameters().toString() + ")");
                         }
+                    }
+                    JavaScriptBackend js = new JavaScriptBackend(parser.getClassTree());
+                    byte[][] output = js.compileClasses();
+                    for (byte[] bytes : output) {
+                        System.out.println(new String(bytes, Charset.defaultCharset()));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

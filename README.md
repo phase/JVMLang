@@ -3,6 +3,7 @@
 
 ## Design Goals
 * Concise syntax
-* Compile to clean JVM bytecode
+* Support multiple backends
+  * JVM, YARV, Parrot, LLVM, JavaScript, etc.
 * No standard library
 * No runtime library
