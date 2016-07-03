@@ -23,7 +23,7 @@ public class JVMBackend extends Backend implements Opcodes {
         MethodVisitor mv;
         {
             // TODO packages
-            cw.visit(V1_8, ACC_PUBLIC, "lang/" + clazz.getName(), null, "java/lang/Object", null);
+            cw.visit(V1_8, ACC_PUBLIC, clazz.getModule() + clazz.getName(), null, "java/lang/Object", null);
             for (LMethod method : clazz.getMethods()) {
                 int modifiers = 0;
                 for (LModifier modifier : method.getModifiers())

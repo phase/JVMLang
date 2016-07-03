@@ -5,20 +5,25 @@ import java.util.List;
 
 public class LClass extends LType {
 
+    private String module;
     private String name;
     private List<LField> fields;
     private List<LMethod> methods;
 
-    public LClass(String name) {
-        this(name, new ArrayList<LField>(), new ArrayList<LMethod>());
+    public LClass(String module, String name) {
+        this(module, name, new ArrayList<LField>(), new ArrayList<LMethod>());
     }
 
-    public LClass(String name, List<LField> fields, List<LMethod> methods) {
-        // TODO packages
-        super(name, "Llang/" + name + ";");
+    public LClass(String module, String name, List<LField> fields, List<LMethod> methods) {
+        super(name, "L" + module.replace(".", "/") + name + ";");
+        this.module = module;
         this.name = name;
         this.fields = fields;
         this.methods = methods;
+    }
+
+    public String getModule() {
+        return module;
     }
 
     public String getName() {

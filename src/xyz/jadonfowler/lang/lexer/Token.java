@@ -2,6 +2,14 @@ package xyz.jadonfowler.lang.lexer;
 
 public class Token {
 
+    public static final Token MODULE = new Token("module", TokenType.IDENTIFIER);
+    public static final Token CLASS = new Token("class", TokenType.IDENTIFIER);
+    public static final Token OPEN_BRACE = new Token("{", TokenType.SYMBOL);
+    public static final Token CLOSE_BRACE = new Token("}", TokenType.SYMBOL);
+    public static final Token OPEN_PAREN = new Token("{", TokenType.SYMBOL);
+    public static final Token CLOSE_PAREN = new Token("}", TokenType.SYMBOL);
+    public static final Token DOT = new Token(".", TokenType.SYMBOL);
+    
     private String value;
     private TokenType type;
 

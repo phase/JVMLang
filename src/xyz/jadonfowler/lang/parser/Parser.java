@@ -16,20 +16,17 @@ import xyz.jadonfowler.lang.lexer.TokenType;
 
 public class Parser {
 
-    // static tokens
-    public static final Token CLASS_TOKEN = new Token("class", TokenType.IDENTIFIER);
-    public static final Token OPEN_BRACE_TOKEN = new Token("{", TokenType.SYMBOL);
-    public static final Token CLOSE_BRACE_TOKEN = new Token("}", TokenType.SYMBOL);
-
     private Lexer lexer;
     private Context context;
     private AbstractClassTree act;
+    private String classModule;
     private LClass currentClass;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
         this.context = Context.TOP;
         this.act = new AbstractClassTree();
+        this.classModule = "";
         this.currentClass = null;
     }
 
@@ -38,13 +35,24 @@ public class Parser {
             System.out.println(context + ": " + token + " ");
             switch (context) {
                 case TOP:
-                    if (token.equals(CLASS_TOKEN)) {
+                    if (token.equals(Token.MODULE)) {
+                        // package a.b.c.d class Blah
+                        Token cache;
+                        List<String> modulePath = new ArrayList<>();
+                        while (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                            modulePath.add(cache.getValue());
+                            if (!lexer.next().equals(Token.DOT))
+                                break;
+                        }
+                        lexer.pushBack();
+                        classModule = String.join(".", modulePath);
+                    } else if (token.equals(Token.CLASS)) {
                         String className;
                         Token cache;
                         if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
                             className = cache.getValue();
-                            if (lexer.hasNext() && (cache = lexer.next()).equals(OPEN_BRACE_TOKEN)) {
-                                LClass clazz = new LClass(className);
+                            if (lexer.hasNext() && (cache = lexer.next()).equals(Token.OPEN_BRACE)) {
+                                LClass clazz = new LClass(classModule, className);
                                 act.add(clazz);
                                 currentClass = clazz;
                                 context = Context.IN_CLASS;
@@ -121,13 +129,13 @@ public class Parser {
                             // them...
                         }
                     }
-                    if (token.equals(CLOSE_BRACE_TOKEN)) {
+                    if (token.equals(Token.CLOSE_BRACE)) {
                         // done with class
                         break lex;
                     }
                     break;
                 case IN_METHOD:
-                    if (token.equals(CLOSE_BRACE_TOKEN)) {
+                    if (token.equals(Token.CLOSE_BRACE)) {
                         // done with method
                         context = Context.IN_CLASS;
                     }

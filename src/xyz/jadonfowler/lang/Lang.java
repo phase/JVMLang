@@ -33,6 +33,7 @@ public class Lang {
                     parser.parse();
                     for (LClass clazz : parser.getClassTree()) {
                         System.out.println("Class: " + clazz.getName());
+                        System.out.println("  Module: " + clazz.getModule());
                         for (LField field : clazz.getFields()) {
                             System.out.println("  Field: " + field.getModifiers().toString() + " " + field.getType() + " " + field.getName());
                         }
@@ -43,18 +44,35 @@ public class Lang {
                         }
                     }
                     JavaScriptBackend js = new JavaScriptBackend(parser.getClassTree());
-                    byte[][] output = js.compileClasses();
-                    for (byte[] bytes : output) {
-                        System.out.println(new String(bytes, Charset.defaultCharset()));
-                    }
                     JVMBackend jvm = new JVMBackend(parser.getClassTree());
                     byte[][] jvmClasses = jvm.compileClasses();
-                    for (byte[] clazz : jvmClasses) {
-                        try (FileOutputStream stream = new FileOutputStream("a.class")) {
-                            stream.write(clazz);
-                            stream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    for (LClass clazz : parser.getClassTree()) {
+                        String name = clazz.getName();
+                        { // javascript
+                            byte[] jsClass = js.compileClass(name);
+                            File jsFile = new File("output/js/src/" + name + ".js");
+                            jsFile.mkdirs();
+                            jsFile.delete();
+                            jsFile.createNewFile();
+                            try (FileOutputStream stream = new FileOutputStream(jsFile)) {
+                                stream.write(jsClass);
+                                stream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        { // jvm
+                            byte[] jvmClass = jvm.compileClass(name);
+                            File classFile = new File("output/jvm/src/" + clazz.getModule().replace(".", "/") + "/" + name + ".class");
+                            classFile.mkdirs();
+                            classFile.delete();
+                            classFile.createNewFile();
+                            try (FileOutputStream stream = new FileOutputStream(classFile)) {
+                                stream.write(jvmClass);
+                                stream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 } catch (IOException e) {
