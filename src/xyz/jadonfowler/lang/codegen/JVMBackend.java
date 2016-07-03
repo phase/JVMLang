@@ -29,7 +29,7 @@ public class JVMBackend extends Backend implements Opcodes {
             StringBuffer constructorDescription = new StringBuffer();
             constructorDescription.append("(");
             for (LParameter parameter : clazz.getConstructor().getParameters())
-                constructorDescription.append(parameter.getType().getDescription());
+                constructorDescription.append(parameter.getType().getJVMDescription());
             constructorDescription.append(")V"); // constructors return void
             mv = cw.visitMethod(ACC_PUBLIC, "<init>", constructorDescription.toString(), null, null);
             mv.visitCode();
@@ -40,7 +40,7 @@ public class JVMBackend extends Backend implements Opcodes {
             for (LField field : clazz.getFields()) {
                 if (field.getType().equals(LType.VOID))
                     continue; // ignore void variables
-                fv = cw.visitField(0, field.getName(), field.getType().getDescription(), null, null);
+                fv = cw.visitField(0, field.getName(), field.getType().getJVMDescription(), null, null);
                 fv.visitEnd();
             }
             // mv.visitMaxs(1 + fieldCount, 1 + this.variables.size() +
@@ -56,8 +56,8 @@ public class JVMBackend extends Backend implements Opcodes {
                 StringBuffer methodDescription = new StringBuffer();
                 methodDescription.append("(");
                 for (LParameter parameter : method.getParameters())
-                    methodDescription.append(parameter.getType().getDescription());
-                methodDescription.append(")" + method.getReturnType().getDescription());
+                    methodDescription.append(parameter.getType().getJVMDescription());
+                methodDescription.append(")" + method.getReturnType().getJVMDescription());
                 mv = cw.visitMethod(modifiers, method.getName(), methodDescription.toString(), null, null);
                 mv.visitCode();
                 // end

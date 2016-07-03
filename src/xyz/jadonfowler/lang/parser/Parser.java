@@ -104,7 +104,7 @@ public class Parser {
                                     if (cache.getType().equals(TokenType.SYMBOL)) {
                                         if (cache.equals(Token.OPEN_BRACE)) {
                                             if (name.equals("init")) {
-                                                LConstructor constructor = new LConstructor(currentClass, name, parameters, modifiers);
+                                                LConstructor constructor = new LConstructor(currentClass, parameters, modifiers);
                                                 currentClass.setConstructor(constructor);
                                             } else {
                                                 LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
@@ -126,6 +126,10 @@ public class Parser {
                     }
                     if (token.equals(Token.CLOSE_BRACE)) {
                         // done with class
+                        if (currentClass.getConstructor() == null) {
+                            LConstructor constructor = new LConstructor(currentClass);
+                            currentClass.setConstructor(constructor);
+                        }
                         break lex;
                     }
                     break;

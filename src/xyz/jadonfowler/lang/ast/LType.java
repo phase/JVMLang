@@ -16,7 +16,7 @@ public class LType {
     public static final LType DOUBLE = new LType("double", "D", "0.0");
 
     private String ident;
-    private String description;
+    private String jvmDescription;
     private String defaultValue;
 
     public LType(String ident, String description) {
@@ -25,7 +25,7 @@ public class LType {
 
     public LType(String ident, String description, String defaultValue) {
         this.ident = ident;
-        this.description = description;
+        this.jvmDescription = description;
         this.defaultValue = defaultValue;
         types.add(this);
     }
@@ -34,8 +34,8 @@ public class LType {
         return defaultValue;
     }
 
-    public String getDescription() {
-        return description;
+    public String getJVMDescription() {
+        return jvmDescription;
     }
 
     @Override
