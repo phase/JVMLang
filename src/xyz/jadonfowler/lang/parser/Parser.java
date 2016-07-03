@@ -61,72 +61,69 @@ public class Parser {
                     }
                     break;
                 case IN_CLASS:
+                    List<LModifier> modifiers = new ArrayList<LModifier>();
+                    Token cache;
                     if (LModifier.isModifier(token)) {
-                        List<LModifier> modifiers = new ArrayList<LModifier>();
                         modifiers.add(LModifier.getModifier(token));
-                        Token cache;
                         while (lexer.hasNext() && LModifier.isModifier((cache = lexer.next())))
                             modifiers.add(LModifier.getModifier(cache));
-                        lexer.pushBack();
-                        if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
-                            // public static... type
-                            if (LType.isType(cache.getValue())) {
-                                LType type = LType.getType(cache.getValue());
-                                if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
-                                    // public... type name
-                                    String name = cache.getValue();
+                    }
+                    lexer.pushBack();
+                    if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                        // public static... type
+                        if (LType.isType(cache.getValue())) {
+                            LType type = LType.getType(cache.getValue());
+                            if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
+                                // public... type name
+                                String name = cache.getValue();
 
-                                    if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.SYMBOL)) {
-                                        // public static void method (
-                                        if (cache.getValue().equals("(")) {
-                                            List<LParameter> parameters = new ArrayList<LParameter>();
-                                            while (lexer.hasNext()) {
-                                                Token ptype = lexer.next();
-                                                Token pname = lexer.next();
-                                                parameters.add(new LParameter(LType.getType(ptype.getValue()), pname.getValue()));
-                                                cache = lexer.next();
-                                                if (cache.getType().equals(TokenType.SYMBOL)) {
-                                                    if (cache.getValue().equals(","))
-                                                        continue;
-                                                    if (cache.getValue().equals(")"))
-                                                        break;
-                                                } else {
-                                                    lexer.pushBack();
+                                if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.SYMBOL)) {
+                                    // public static void method (
+                                    if (cache.getValue().equals("(")) {
+                                        List<LParameter> parameters = new ArrayList<LParameter>();
+                                        while (lexer.hasNext()) {
+                                            Token ptype = lexer.next();
+                                            Token pname = lexer.next();
+                                            parameters.add(new LParameter(LType.getType(ptype.getValue()), pname.getValue()));
+                                            cache = lexer.next();
+                                            if (cache.getType().equals(TokenType.SYMBOL)) {
+                                                if (cache.getValue().equals(","))
+                                                    continue;
+                                                if (cache.getValue().equals(")"))
                                                     break;
-                                                }
+                                            } else {
+                                                lexer.pushBack();
+                                                break;
                                             }
-                                            if (lexer.hasNext()) {
-                                                cache = lexer.next();
-                                                if (cache.getType().equals(TokenType.SYMBOL)) {
-                                                    if (cache.getValue().equals("{")) {
-                                                        LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
-                                                        currentClass.addMethod(method);
-                                                        context = Context.IN_METHOD;
-                                                    } else
-                                                        lexer.pushBack();
+                                        }
+                                        if (lexer.hasNext()) {
+                                            cache = lexer.next();
+                                            if (cache.getType().equals(TokenType.SYMBOL)) {
+                                                if (cache.getValue().equals("{")) {
+                                                    LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
+                                                    currentClass.addMethod(method);
+                                                    context = Context.IN_METHOD;
+                                                } else
+                                                    lexer.pushBack();
 
-                                                }
                                             }
-                                        } else {
-                                            // The symbol must be for something
-                                            // else, so we're going to ignore it
-                                            // and parse what we have as a
-                                            // field.
-                                            lexer.pushBack();
-                                            LField field = new LField(currentClass, modifiers, type, name);
-                                            currentClass.addField(field);
                                         }
                                     } else {
-                                        // public static int field
+                                        // The symbol must be for something
+                                        // else, so we're going to ignore it
+                                        // and parse what we have as a
+                                        // field.
                                         lexer.pushBack();
                                         LField field = new LField(currentClass, modifiers, type, name);
                                         currentClass.addField(field);
                                     }
+                                } else {
+                                    // public static int field
+                                    lexer.pushBack();
+                                    LField field = new LField(currentClass, modifiers, type, name);
+                                    currentClass.addField(field);
                                 }
                             }
-                        } else {
-                            // random modifiers without an identifier after
-                            // them...
                         }
                     }
                     if (token.equals(Token.CLOSE_BRACE)) {

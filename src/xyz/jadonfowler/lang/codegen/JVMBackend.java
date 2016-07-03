@@ -22,7 +22,6 @@ public class JVMBackend extends Backend implements Opcodes {
         FieldVisitor fv;
         MethodVisitor mv;
         {
-            // TODO packages
             cw.visit(V1_8, ACC_PUBLIC, clazz.getModule() + clazz.getName(), null, "java/lang/Object", null);
             for (LMethod method : clazz.getMethods()) {
                 int modifiers = 0;

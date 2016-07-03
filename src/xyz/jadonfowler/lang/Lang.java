@@ -45,7 +45,6 @@ public class Lang {
                     }
                     JavaScriptBackend js = new JavaScriptBackend(parser.getClassTree());
                     JVMBackend jvm = new JVMBackend(parser.getClassTree());
-                    byte[][] jvmClasses = jvm.compileClasses();
                     for (LClass clazz : parser.getClassTree()) {
                         String name = clazz.getName();
                         { // javascript
