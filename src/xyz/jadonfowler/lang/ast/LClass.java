@@ -14,7 +14,8 @@ public class LClass extends LType {
     }
 
     public LClass(String name, List<LField> fields, List<LMethod> methods) {
-        super(name);
+        // TODO packages
+        super(name, "Llang/" + name + ";");
         this.name = name;
         this.fields = fields;
         this.methods = methods;

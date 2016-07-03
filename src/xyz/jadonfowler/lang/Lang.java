@@ -1,6 +1,7 @@
 package xyz.jadonfowler.lang;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -9,6 +10,7 @@ import java.nio.file.Paths;
 import xyz.jadonfowler.lang.ast.LClass;
 import xyz.jadonfowler.lang.ast.LField;
 import xyz.jadonfowler.lang.ast.LMethod;
+import xyz.jadonfowler.lang.codegen.JVMBackend;
 import xyz.jadonfowler.lang.codegen.JavaScriptBackend;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
@@ -44,6 +46,16 @@ public class Lang {
                     byte[][] output = js.compileClasses();
                     for (byte[] bytes : output) {
                         System.out.println(new String(bytes, Charset.defaultCharset()));
+                    }
+                    JVMBackend jvm = new JVMBackend(parser.getClassTree());
+                    byte[][] jvmClasses = jvm.compileClasses();
+                    for (byte[] clazz : jvmClasses) {
+                        try (FileOutputStream stream = new FileOutputStream("a.class")) {
+                            stream.write(clazz);
+                            stream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
