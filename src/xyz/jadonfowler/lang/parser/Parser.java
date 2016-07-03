@@ -83,9 +83,9 @@ public class Parser {
                             String name = cache.getValue();
 
                             if (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.SYMBOL)) {
-                                // public static void method (
+                                List<LParameter> parameters = new ArrayList<LParameter>();
+                                // parse parameters
                                 if (cache.getValue().equals("(")) {
-                                    List<LParameter> parameters = new ArrayList<LParameter>();
                                     while (lexer.hasNext()) {
                                         cache = lexer.next();
                                         if (cache.getType().equals(TokenType.SYMBOL)) {
@@ -96,31 +96,25 @@ public class Parser {
                                             parameters.add(new LParameter(LType.getType(cache.getValue()), pname.getValue()));
                                         }
                                     }
-                                    if (lexer.hasNext()) {
-                                        cache = lexer.next();
-                                        if (cache.getType().equals(TokenType.SYMBOL)) {
-                                            if (cache.equals(Token.OPEN_BRACE)) {
-                                                if (name.equals("init")) {
-                                                    LConstructor constructor = new LConstructor(currentClass, name, parameters, modifiers);
-                                                    currentClass.setConstructor(constructor);
-                                                } else {
-                                                    LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
-                                                    currentClass.addMethod(method);
-                                                }
-                                                context = Context.IN_METHOD;
-                                            } else
-                                                lexer.pushBack();
-
-                                        }
-                                    }
                                 } else {
-                                    // The symbol must be for something
-                                    // else, so we're going to ignore it
-                                    // and parse what we have as a
-                                    // field.
                                     lexer.pushBack();
-                                    LField field = new LField(currentClass, modifiers, type, name);
-                                    currentClass.addField(field);
+                                }
+                                if (lexer.hasNext()) {
+                                    cache = lexer.next();
+                                    if (cache.getType().equals(TokenType.SYMBOL)) {
+                                        if (cache.equals(Token.OPEN_BRACE)) {
+                                            if (name.equals("init")) {
+                                                LConstructor constructor = new LConstructor(currentClass, name, parameters, modifiers);
+                                                currentClass.setConstructor(constructor);
+                                            } else {
+                                                LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
+                                                currentClass.addMethod(method);
+                                            }
+                                            context = Context.IN_METHOD;
+                                        } else
+                                            lexer.pushBack();
+
+                                    }
                                 }
                             } else {
                                 // public static int field
