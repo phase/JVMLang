@@ -9,7 +9,7 @@ public class LMethod extends Scope {
     private String name;
     private LType returnType;
     private List<LParameter> parameters;
-    private List<LModifier> modifiers;
+    protected List<LModifier> modifiers;
 
     public LMethod(LClass parent, String name, LType returnType) {
         this(parent, name, returnType, new ArrayList<>(), new ArrayList<>());
@@ -41,6 +41,12 @@ public class LMethod extends Scope {
 
     public List<LModifier> getModifiers() {
         return modifiers;
+    }
+
+    @Override
+    public String toString() {
+        return modifiers.toString() + " " + returnType + " " + name
+                + " (" + parameters.toString() + ")";
     }
 
 }

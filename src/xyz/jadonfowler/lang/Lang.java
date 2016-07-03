@@ -13,7 +13,6 @@ import xyz.jadonfowler.lang.ast.LMethod;
 import xyz.jadonfowler.lang.codegen.JVMBackend;
 import xyz.jadonfowler.lang.codegen.JavaScriptBackend;
 import xyz.jadonfowler.lang.lexer.Lexer;
-import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.parser.Parser;
 
 public class Lang {
@@ -27,20 +26,18 @@ public class Lang {
                 try {
                     String content = new String(Files.readAllBytes(Paths.get(file.getPath())), Charset.defaultCharset());
                     Lexer lexer = new Lexer(content);
-                    for (Token token : new Lexer(lexer))
-                        System.out.println(token);
                     Parser parser = new Parser(lexer);
                     parser.parse();
                     for (LClass clazz : parser.getClassTree()) {
                         System.out.println("Class: " + clazz.getName());
                         System.out.println("  Module: " + clazz.getModule());
+                        System.out.println("  Constructor: " + clazz.getConstructor().toString());
                         for (LField field : clazz.getFields()) {
                             System.out.println("  Field: " + field.getModifiers().toString() + " " + field.getType() + " " + field.getName());
                         }
                         for (LMethod method : clazz.getMethods()) {
                             System.out
-                                    .println("  Method: " + method.getModifiers().toString() + " " + method.getReturnType() + " " + method.getName()
-                                            + " (" + method.getParameters().toString() + ")");
+                                    .println("  Method: " + method.toString());
                         }
                     }
                     JavaScriptBackend js = new JavaScriptBackend(parser.getClassTree());

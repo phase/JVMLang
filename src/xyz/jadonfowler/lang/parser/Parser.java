@@ -5,6 +5,7 @@ import java.util.List;
 
 import xyz.jadonfowler.lang.ast.AbstractClassTree;
 import xyz.jadonfowler.lang.ast.LClass;
+import xyz.jadonfowler.lang.ast.LConstructor;
 import xyz.jadonfowler.lang.ast.LField;
 import xyz.jadonfowler.lang.ast.LMethod;
 import xyz.jadonfowler.lang.ast.LModifier;
@@ -32,7 +33,7 @@ public class Parser {
 
     public void parse() {
         lex: for (Token token : lexer) {
-            System.out.println(context + ": " + token + " ");
+            // System.out.println(context + ": " + token + " ");
             switch (context) {
                 case TOP:
                     if (token.equals(Token.MODULE)) {
@@ -41,7 +42,7 @@ public class Parser {
                         List<String> modulePath = new ArrayList<>();
                         while (lexer.hasNext() && (cache = lexer.next()).getType().equals(TokenType.IDENTIFIER)) {
                             modulePath.add(cache.getValue());
-                            if (!lexer.next().equals(Token.DOT))
+                            if (!lexer.next().equals(Token.PERIOD))
                                 break;
                         }
                         lexer.pushBack();
@@ -82,26 +83,26 @@ public class Parser {
                                     if (cache.getValue().equals("(")) {
                                         List<LParameter> parameters = new ArrayList<LParameter>();
                                         while (lexer.hasNext()) {
-                                            Token ptype = lexer.next();
-                                            Token pname = lexer.next();
-                                            parameters.add(new LParameter(LType.getType(ptype.getValue()), pname.getValue()));
                                             cache = lexer.next();
                                             if (cache.getType().equals(TokenType.SYMBOL)) {
-                                                if (cache.getValue().equals(","))
-                                                    continue;
-                                                if (cache.getValue().equals(")"))
+                                                if (!cache.equals(Token.COMMA))
                                                     break;
-                                            } else {
-                                                lexer.pushBack();
-                                                break;
+                                            } else if (lexer.hasNext()) {
+                                                Token pname = lexer.next();
+                                                parameters.add(new LParameter(LType.getType(cache.getValue()), pname.getValue()));
                                             }
                                         }
                                         if (lexer.hasNext()) {
                                             cache = lexer.next();
                                             if (cache.getType().equals(TokenType.SYMBOL)) {
-                                                if (cache.getValue().equals("{")) {
-                                                    LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
-                                                    currentClass.addMethod(method);
+                                                if (cache.equals(Token.OPEN_BRACE)) {
+                                                    if (name.equals("init")) {
+                                                        LConstructor constructor = new LConstructor(currentClass, name, parameters, modifiers);
+                                                        currentClass.setConstructor(constructor);
+                                                    } else {
+                                                        LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
+                                                        currentClass.addMethod(method);
+                                                    }
                                                     context = Context.IN_METHOD;
                                                 } else
                                                     lexer.pushBack();

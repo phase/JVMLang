@@ -9,17 +9,19 @@ public class LClass extends LType {
     private String name;
     private List<LField> fields;
     private List<LMethod> methods;
+    private LConstructor constructor;
 
     public LClass(String module, String name) {
-        this(module, name, new ArrayList<LField>(), new ArrayList<LMethod>());
+        this(module, name, new ArrayList<LField>(), new ArrayList<LMethod>(), null);
     }
 
-    public LClass(String module, String name, List<LField> fields, List<LMethod> methods) {
+    public LClass(String module, String name, List<LField> fields, List<LMethod> methods, LConstructor constructor) {
         super(name, "L" + module.replace(".", "/") + name + ";");
         this.module = module;
         this.name = name;
         this.fields = fields;
         this.methods = methods;
+        this.constructor = constructor;
     }
 
     public String getModule() {
@@ -44,6 +46,16 @@ public class LClass extends LType {
 
     public void addMethod(LMethod m) {
         methods.add(m);
+    }
+
+    public LConstructor getConstructor() {
+        return constructor;
+    }
+
+    public void setConstructor(LConstructor constructor) {
+        if (this.constructor != null)
+            throw new IllegalStateException("Class " + name + " already has a constructor!");
+        this.constructor = constructor;
     }
 
 }
