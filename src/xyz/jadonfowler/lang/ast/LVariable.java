@@ -12,5 +12,10 @@ public class LVariable extends LValue {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public String toString() {
+        return this.getType().toString() + " " + name;
+    }
 
 }

@@ -11,6 +11,8 @@ import xyz.jadonfowler.lang.ast.LMethod;
 import xyz.jadonfowler.lang.ast.LModifier;
 import xyz.jadonfowler.lang.ast.LParameter;
 import xyz.jadonfowler.lang.ast.LType;
+import xyz.jadonfowler.lang.ast.LVariable;
+import xyz.jadonfowler.lang.ast.instruction.CreateLocalVariableInstruction;
 import xyz.jadonfowler.lang.lexer.Lexer;
 import xyz.jadonfowler.lang.lexer.Token;
 import xyz.jadonfowler.lang.lexer.TokenType;
@@ -20,18 +22,17 @@ public class Parser {
     private Lexer lexer;
     private Context context;
     private AbstractClassTree act;
-    private String classModule;
-    private LClass currentClass;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
         this.context = Context.TOP;
         this.act = new AbstractClassTree();
-        this.classModule = "";
-        this.currentClass = null;
     }
 
     public void parse() {
+        String classModule = "";
+        LClass currentClass = null;
+        LMethod currentMethod = null;
         lex: for (Token token : lexer) {
             // System.out.println(context + ": " + token + " ");
             switch (context) {
@@ -106,9 +107,11 @@ public class Parser {
                                             if (name.equals("init")) {
                                                 LConstructor constructor = new LConstructor(currentClass, parameters, modifiers);
                                                 currentClass.setConstructor(constructor);
+                                                currentMethod = constructor;
                                             } else {
                                                 LMethod method = new LMethod(currentClass, name, type, parameters, modifiers);
                                                 currentClass.addMethod(method);
+                                                currentMethod = method;
                                             }
                                             context = Context.IN_METHOD;
                                         } else
@@ -134,7 +137,47 @@ public class Parser {
                     }
                     break;
                 case IN_METHOD:
-                    if (token.equals(Token.CLOSE_BRACE)) {
+                    if (token.getType().equals(TokenType.IDENTIFIER)) {
+                        if (LType.isType(token.getValue())) {
+                            LType type = LType.getType(token.getValue());
+                            if (lexer.hasNext()) {
+                                token = lexer.next();
+                                switch (token.getType()) {
+                                    case IDENTIFIER:
+                                        // creating a variable:
+                                        // "Type Identifier"
+                                        String name = token.getValue();
+                                        if (lexer.hasNext() && (token = lexer.next()).getType().equals(TokenType.SYMBOL)) {
+                                            if (token.getValue().equals("=")) {
+                                                currentMethod.addInstruction(new CreateLocalVariableInstruction(new LVariable(type, name, null)));
+                                                // "Type ident ="
+                                                // TODO parse expressions
+                                            }
+                                        } else if (token.getType().equals(TokenType.IDENTIFIER)) {
+                                            // "Type ident ident" shouldn't
+                                            // happen
+                                            lexer.pushBack();
+                                        }
+                                        break;
+                                    case INTEGER_LITERAL:
+                                        break;
+                                    case STRING_LITERAL:
+                                        break;
+                                    case SYMBOL:
+                                        if (token.equals(Token.PERIOD)) {
+                                            // accessing something from a type:
+                                            // "Type."
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } else {
+                                // random type floating in method body
+                                // allocate and return default value?
+                            }
+                        }
+                    } else if (token.equals(Token.CLOSE_BRACE)) {
                         // done with method
                         context = Context.IN_CLASS;
                     }

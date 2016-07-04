@@ -3,6 +3,8 @@ package xyz.jadonfowler.lang.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.jadonfowler.lang.ast.instruction.Instruction;
+
 public class LMethod extends Scope {
 
     private LClass parent;
@@ -10,6 +12,7 @@ public class LMethod extends Scope {
     private LType returnType;
     private List<LParameter> parameters;
     protected List<LModifier> modifiers;
+    private List<Instruction> instructions;
 
     public LMethod(LClass parent, String name, LType returnType) {
         this(parent, name, returnType, new ArrayList<>(), new ArrayList<>());
@@ -21,6 +24,7 @@ public class LMethod extends Scope {
         this.returnType = returnType;
         this.parameters = parameters;
         this.modifiers = modifiers;
+        this.instructions = new ArrayList<Instruction>();
     }
 
     public LClass getParent() {
@@ -41,6 +45,14 @@ public class LMethod extends Scope {
 
     public List<LModifier> getModifiers() {
         return modifiers;
+    }
+
+    public List<Instruction> getInstructions() {
+        return instructions;
+    }
+
+    public void addInstruction(Instruction ins) {
+        instructions.add(ins);
     }
 
     @Override

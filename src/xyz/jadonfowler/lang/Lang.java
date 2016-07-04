@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import xyz.jadonfowler.lang.ast.LClass;
 import xyz.jadonfowler.lang.ast.LField;
 import xyz.jadonfowler.lang.ast.LMethod;
+import xyz.jadonfowler.lang.ast.instruction.Instruction;
 import xyz.jadonfowler.lang.codegen.JVMBackend;
 import xyz.jadonfowler.lang.codegen.JavaScriptBackend;
 import xyz.jadonfowler.lang.lexer.Lexer;
@@ -38,6 +39,9 @@ public class Lang {
                         for (LMethod method : clazz.getMethods()) {
                             System.out
                                     .println("  Method: " + method.toString());
+                            for (Instruction ins : method.getInstructions()) {
+                                System.out.println("    " + ins);
+                            }
                         }
                     }
                     JavaScriptBackend js = new JavaScriptBackend(parser.getClassTree());
