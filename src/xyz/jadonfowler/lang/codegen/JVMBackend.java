@@ -11,6 +11,8 @@ import xyz.jadonfowler.lang.ast.LMethod;
 import xyz.jadonfowler.lang.ast.LModifier;
 import xyz.jadonfowler.lang.ast.LParameter;
 import xyz.jadonfowler.lang.ast.LType;
+import xyz.jadonfowler.lang.ast.instruction.CreateLocalVariableInstruction;
+import xyz.jadonfowler.lang.ast.instruction.Instruction;
 
 public class JVMBackend extends Backend implements Opcodes {
 
@@ -60,6 +62,11 @@ public class JVMBackend extends Backend implements Opcodes {
                 methodDescription.append(")" + method.getReturnType().getJVMDescription());
                 mv = cw.visitMethod(modifiers, method.getName(), methodDescription.toString(), null, null);
                 mv.visitCode();
+                for (Instruction instruction : method.getInstructions()) {
+                    if (instruction instanceof CreateLocalVariableInstruction) {
+                        CreateLocalVariableInstruction ins = (CreateLocalVariableInstruction) instruction;
+                    }
+                }
                 // end
                 mv.visitInsn(RETURN);
                 // mv.visitMaxs(variableCount > 0 ? 1 : 0, variableCount +

@@ -28,10 +28,11 @@ public class MethodParser implements ContextParser {
                             // "Type Identifier"
                             String name = token.getValue();
                             if (lexer.hasNext() && (token = lexer.next()).getType().equals(TokenType.SYMBOL)) {
-                                if (token.getValue().equals("=")) {
-                                    parser.getCurrentMethod().addInstruction(new CreateLocalVariableInstruction(new LVariable(type, name, null)));
+                                if (token.equals(Token.EQUAL)) {
+                                    LVariable var = new LVariable(type, name, null);
+                                    parser.getCurrentMethod().addInstruction(new CreateLocalVariableInstruction(var));
                                     // "Type ident ="
-                                    // TODO parse expressions
+                                    parser.getVariableExpressionParser().parse(var, lexer);
                                 }
                             } else if (token.getType().equals(TokenType.IDENTIFIER)) {
                                 // "Type ident ident" shouldn't

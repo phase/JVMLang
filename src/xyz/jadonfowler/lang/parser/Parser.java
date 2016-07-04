@@ -15,6 +15,7 @@ public class Parser {
     private TopParser topParser;
     private ClassParser classParser;
     private MethodParser methodParser;
+    private VariableExpressionParser variableExpressionParser;
 
     private LClass currentClass = null;
     private LMethod currentMethod = null;
@@ -26,6 +27,7 @@ public class Parser {
         this.topParser = new TopParser(this);
         this.classParser = new ClassParser(this);
         this.methodParser = new MethodParser(this);
+        this.variableExpressionParser = new VariableExpressionParser(this);
     }
 
     public void parse() {
@@ -71,6 +73,10 @@ public class Parser {
 
     protected Lexer getLexer() {
         return lexer;
+    }
+
+    protected VariableExpressionParser getVariableExpressionParser() {
+        return variableExpressionParser;
     }
 
     public AbstractClassTree getClassTree() {

@@ -10,7 +10,8 @@ public class Token {
     public static final Token CLOSE_PAREN = new Token(")", TokenType.SYMBOL);
     public static final Token PERIOD = new Token(".", TokenType.SYMBOL);
     public static final Token COMMA = new Token(",", TokenType.SYMBOL);
-    
+    public static final Token EQUAL = new Token("=", TokenType.SYMBOL);
+
     private String value;
     private TokenType type;
 
