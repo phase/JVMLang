@@ -6,8 +6,8 @@ public class Token {
     public static final Token CLASS = new Token("class", TokenType.IDENTIFIER);
     public static final Token OPEN_BRACE = new Token("{", TokenType.SYMBOL);
     public static final Token CLOSE_BRACE = new Token("}", TokenType.SYMBOL);
-    public static final Token OPEN_PAREN = new Token("{", TokenType.SYMBOL);
-    public static final Token CLOSE_PAREN = new Token("}", TokenType.SYMBOL);
+    public static final Token OPEN_PAREN = new Token("(", TokenType.SYMBOL);
+    public static final Token CLOSE_PAREN = new Token(")", TokenType.SYMBOL);
     public static final Token PERIOD = new Token(".", TokenType.SYMBOL);
     public static final Token COMMA = new Token(",", TokenType.SYMBOL);
     
